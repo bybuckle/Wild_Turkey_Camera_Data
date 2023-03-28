@@ -1,0 +1,39 @@
+
+library(RMark)
+
+cat<-convert.inp("Hugg5.inp",group.df=NULL,covariates=NULL)
+
+head(cat)
+
+data<-(cat)
+x=data.frame(ch=paste(cat$ch))
+x$id<-NULL
+x$ch=as.character(x$ch)
+
+turk=function()
+{
+  x.proc=process.data(x,model="Huggins")
+  x.ddl=make.design.data(x.proc)
+  
+  p.dot=list(formula=~1,share=FALSE)
+  c.dot=list(formula~1)
+  mod.1=mark(x.proc,x.ddl,model.parameters=list(p=p.dot),(c=c.dot),invisible=FALSE)
+  p.sharetime=list(formula=~time, share=TRUE)
+  mod.2=mark(x.proc, x.ddl, model.parameters=list(p=p.sharetime), invisible=FALSE)
+  
+  return(collect.models())
+}
+
+turk.out=turk()
+turk.out
+
+  x.proc=process.data(x,model="Huggins")
+  x.ddl=make.design.data(x.proc)
+  
+  p.dot=list(formula=~1,share=FALSE)
+  c.dot=list(formula~1)
+  mod.1=mark(x.proc,x.ddl,model.parameters=list(p=p.dot),(c=c.dot),invisible=FALSE)
+
+
+mod.1$results$derived
+mod.1$results$derived.vcv

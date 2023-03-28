@@ -1,0 +1,52 @@
+
+library(RMark)
+
+cat<-convert.inp("Hugg5.inp",group.df=NULL,covariates=NULL)
+
+head(cat)
+
+data<-(cat)
+x=data.frame(ch=paste(cat$ch))
+x$id<-NULL
+x$ch=as.character(x$ch)
+
+  x.proc=process.data(x,model="HugginsRE",mixture=5)
+  x.ddl=make.design.data(x.proc)
+
+  turk=function()
+{
+  p.dot=list(formula=~1,share=FALSE)
+  c.dot=list(formula=~1)
+  mod.1=mark(x,model= "HugginsRE", model.parameters=list(p=p.dot),(c=c.dot),invisible=FALSE)
+  p.sharetime=list(formula=~time, share=TRUE)
+  mod.2=mark(x, model="HugginsRE", model.parameters=list(p=p.sharetime), invisible=FALSE)
+  pmixture=list(formula=~mixture)
+  #mod.3=mark(x,model="HugHet",model.parameters=list(p=pmixture),mixtures =5, delete=TRUE)
+ # ptimemixtureshared=list(formula=~time+mixture,share=TRUE)
+  #mod.4=mark(x,model="HugFullHet",model.parameters=list(p=ptimemixtureshared),mixture=5,adjust=TRUE)
+return(collect.models())
+}
+
+turk.out=turk()
+turk.out
+
+
+
+p.dot=list(formula=~1,share=FALSE)
+  c.dot=list(formula=~1)
+  mod.1=mark(x,model= "HugginsRE", model.parameters=list(p=p.dot),(c=c.dot),invisible=FALSE)
+  p.sharetime=list(formula=~time, share=TRUE)
+  mod.2=mark(x, model="HugginsRE", model.parameters=list(p=p.sharetime), invisible=FALSE)
+  pmixture=list(formula=~mixture)
+  #mod.3=mark(x,model="HugHet",model.parameters=list(p=pmixture),mixtures=5, adjust=TRUE)
+  #ptimemixtureshared=list(formula=~time+mixture,share=TRUE)
+  #mod.4=mark(x,model="HugFullHet",model.parameters=list(p=ptimemixtureshared),mixture=5,adjust=TRUE)
+
+mod.1$results$derived
+mod.1$results$derived.vcv
+mod.2$results$derived
+mod.2$results$derived.vcv
+#mod.3$results$derived
+#mod.3$results$derived.vcv
+#mod.4$results$derived
+#mod.4$results$derived.vcv

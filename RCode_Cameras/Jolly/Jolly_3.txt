@@ -1,0 +1,76 @@
+
+
+library(RMark)
+
+
+
+cat<-convert.inp("Joll3.inp",group.df=NULL,covariates=NULL)
+
+head(cat)
+
+
+
+cat.pr<-process.data(cat,begin.time=1, model="POPAN",time.intervals=c(1,1))
+cat.ddl<-make.design.data(cat.pr)
+
+
+
+
+turk=function()
+{
+Phi.dot =list(formula = ~1) #apparent survival
+Phi.time=list(formula = ~time)
+p.dot =list(formula = ~1) #capture prob
+pent.dot =list(formula = ~1) #prob of entry into the pop
+N.dot =list(formula = ~1) #super population size
+p.time=list(formula=~time)
+pent.time=list(formula=~time)#prob of entry
+
+mod.1=mark(cat.pr,
+            cat.ddl,
+            model.parameters=list(
+            Phi = Phi.dot,
+            p = p.dot,
+            pent = pent.dot,
+            N = N.dot),
+            invisible=TRUE)
+mod.2=mark(cat.pr,
+           cat.ddl,
+           model.parameters = list(
+             Phi = Phi.time,
+             p =p.dot,
+             pent = pent.time,
+             N=N.dot),invisible = TRUE)
+return(collect.models())
+}
+
+turk.out=turk()
+turk.out
+
+
+Phi.dot =list(formula = ~1) #apparent survival
+Phi.time=list(formula = ~time)
+p.dot =list(formula = ~1) #capture prob
+pent.dot =list(formula = ~1) #prob of entry into the pop
+N.dot =list(formula = ~1) #super population size
+p.time=list(formula=~time)
+pent.time=list(formula=~time)#prob of entry
+
+mod.1=mark(cat.pr,
+            cat.ddl,
+            model.parameters=list(
+            Phi = Phi.dot,
+            p = p.dot,
+            pent = pent.dot,
+            N = N.dot),
+            invisible=TRUE)
+mod.2=mark(cat.pr,
+           cat.ddl,
+           model.parameters = list(
+             Phi = Phi.time,
+             p =p.dot,
+             pent = pent.time,
+             N=N.dot),invisible = TRUE)
+
+mod.1$results$derived$`Gross N* Population Size`
+mod.2$results$derived$`Gross N* Population Size`

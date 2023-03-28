@@ -1,0 +1,54 @@
+
+library(RMark)
+
+cat<-convert.inp("Sch10.inp",group.df=NULL,covariates=NULL)
+
+head(cat)
+
+cat.pr<-process.data(cat,begin.time=1, model="Closed")
+cat.ddl<-make.design.data(cat.pr)
+
+run.cat<-function() 
+  {
+    pdot=list(formula=~1,share=FALSE)
+    ptimeshared=list(formula=~time,share=TRUE)
+    pdotmixture=list(formula=~mixture,share=TRUE)
+    cdot=list(formula=~1)
+    
+    mod.1=mark(cat,cat.ddl,model="Closed",model.parameters=list(p=pdot),invisible=TRUE)
+    mod.2=mark(cat,cat.ddl,model="Closed",model.parameters=list(p=ptimeshared),invisible=TRUE)
+    mod.3=mark(cat,cat.ddl,model="HetClosed",model.parameters=list(p=pdotmixture),delete=TRUE)
+    
+    #cat.model.list=create.model.list("Closed")
+    #cat.results=mark.wrapper(cat.model.list,
+      #                      data=cat.pr,
+      #                      ddl=cat.ddl)
+    return(collect.models())
+  
+}
+
+
+cat.results<-run.cat()
+cat.results
+
+
+
+    pdot=list(formula=~1,share=FALSE)
+    ptimeshared=list(formula=~time,share=TRUE)
+    pdotmixture=list(formula=~mixture,share=TRUE)
+    cdot=list(formula=~1)
+    ptimemixtureshared=list(formula=~time+mixture,share=TRUE)
+  
+    
+    mod.1=mark(cat,cat.ddl,model="Closed",model.parameters=list(p=pdot),invisible=TRUE)
+    mod.2=mark(cat,cat.ddl,model="Closed",model.parameters=list(p=ptimeshared),invisible=TRUE)
+    mod.3=mark(cat,cat.ddl,model="HetClosed",model.parameters=list(p=pdotmixture),mixture=5,delete=TRUE)
+    #mod.4=mark(cat,cat.ddl,model="HetClosed",model.parameters=list(p=ptimemixtureshared),mixture=10,adjust=TRUE)
+
+mod.1$results$derived
+mod.1$results$derived.vcv
+mod.2$results$derived
+mod.2$results$derived.vcv
+mod.3$results$derived
+mod.3$results$derived.vcv
+

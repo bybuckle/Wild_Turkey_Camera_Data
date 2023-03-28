@@ -1,0 +1,71 @@
+
+library(secr)
+
+
+
+rio<-read.capthist(captfile="SECR5.txt",trapfile=list("sess1.csv","sess2.csv","sess3.csv","sess4.csv"),detector="count",fmt="trapID",noccasions=5)
+
+
+summary(rio)
+
+par(mar=c(1,1,2,1))
+plot(rio,tracks=TRUE)
+
+
+
+m<-unlist(moves(rio))
+par(mar=c(3.2,4,1,1),mgp=c(2.1,0.6,0))
+hist(m,xlab="Movement m",main="")
+
+
+
+fit<-secr.fit(rio,model=list(D~1,g0~1,sigma~1),buffer=1214.78,detectfn="HN",trace=FALSE,biasLimit=NA,verify=FALSE,ncores=3)
+
+AIC(fit)
+
+fit
+
+print(fit)
+
+
+
+par(mar=c(4,4,1,1))
+plot(fit,xval=0:2000,limits=TRUE)
+
+
+esa.plot(fit)
+abline(v=1214.78,lty=2,col="red")
+
+
+fit.HN <- secr.fit (rio, buffer = 1214.78, detectfn = 'HN', trace = FALSE,biasLimit=NA)
+fit.EX <- secr.fit (rio, buffer = 1214.78, detectfn = 'EX', trace = FALSE,biasLimit=NA)
+fit.HR <- secr.fit (rio, buffer = 1214.78, detectfn = 'HR', trace = FALSE,biasLimit=NA)
+
+fits <- secrlist(HN = fit.HN, EX = fit.EX, HR = fit.HR)
+predict(fits)
+
+
+AIC(fits)
+
+
+par(mar=c(4,4,2,2))
+esa.plot(fits,max.buffer=1214.78,biasLimit=NA)
+
+
+fit.HRb <- secr.fit (rio, buffer = 1214.78, detectfn = 'HR',
+model = g0 ~ b, trace = FALSE,biasLimit=NA)
+fit.HRbk <- secr.fit (rio, buffer = 1214.78, detectfn = 'HR',
+model = g0 ~ bk, trace = FALSE,biasLimit=NA)
+
+fitsb<-secrlist(null = fits$HR, b = fit.HRb, bk=fit.HRbk)
+
+AIC(fitsb)
+
+
+
+fit.HRb
+
+
+
+fit$realnames="D"
+model.average(fits,realnames="D")

@@ -1,0 +1,33 @@
+
+library(unmarked)
+library(dplyr)
+library(magrittr)
+library(ggplot2)
+
+detect<-read.csv("OccuRN.csv")
+
+head(detect)
+summary(detect)
+
+det<-detect[,-1]
+turk<-unmarkedFrameOccu(det)
+summary(turk)
+
+mod1<-occuRN(formula=~1 #detection formula
+             ~1, #occupancy formula
+             data=turk)
+summary(mod1)
+
+pop<-backTransform(mod1, 'state')
+detec<-backTransform(mod1, 'det')
+
+pop
+detec
+
+CIpop<-confint(pop)
+CIpop
+
+CIdetec<-confint(detec)
+CIdetec
+
+re <- ranef(mod1)

@@ -1,0 +1,53 @@
+
+library(unmarked)
+
+Rio<-read.csv("Nmixture.csv")
+Rio.y<-Rio[,c("Visit1","Visit2","Visit3","Visit4","Visit5","Visit6","Visit7","Visit8")]
+
+Rio.umf<-unmarkedFramePCO(y=Rio.y,numPrimary=8)
+summary(Rio.umf)
+
+null<-pcountOpen(~1, ~1, ~1, ~1,Rio.umf)
+
+null
+
+mPoission<-pcountOpen(~1,~1,~1,~1,Rio.umf,K=30)
+mNB<-pcountOpen(~1,~1,~1,~1,Rio.umf,mixture=c("NB"),K=30)
+mZIP<-pcountOpen(~1,~1,~1,~1,Rio.umf,mixture=c("ZIP"),K=30)
+
+test<-fitList(mPoission,
+mNB,
+mZIP)
+
+models<-modSel(test)
+
+models
+
+mPoission
+mNB
+mZIP
+
+pop<-backTransform(mNB,type="lambda")
+detec<-backTransform(mNB,type="det")
+(lam<-exp(coef(null,type="lambda"))) #abundance
+(gam<-exp(coef(null,type="gamma"))) #gains and recruitment
+(om<-exp(coef(null,type="omega"))) #survival
+(p<-exp(coef(null,type="det"))) #detection
+
+backTransform(mNB,type="lambda")
+backTransform(mNB,type="det")
+(lam<-exp(coef(mPoission,type="lambda"))) #abundance
+(gam<-exp(coef(mPoission,type="gamma"))) #gains and recruitment
+(om<-exp(coef(mPoission,type="omega"))) #survival
+(p<-exp(coef(mPoission,type="det"))) #detection
+
+
+pop2
+detec2
+
+CIpop<-confint(pop)
+CIpop
+
+CIdetec<-confint(detec)
+CIdetec
+

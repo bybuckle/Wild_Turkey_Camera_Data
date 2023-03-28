@@ -1,0 +1,80 @@
+
+library(secr)
+
+
+
+tur<-read.capthist(captfile="SECR10.txt",trapfile=list("sess1.csv","sess2.csv","sess3.csv","sess4.csv"),detector="count",fmt="trapID",noccasions=10)
+
+summary(tur)
+
+
+par(mar=c(1,1,2,1))
+plot(tur,tracks=TRUE)
+
+
+
+m<-unlist(moves(tur))
+par(mar=c(3.2,4,1,1),mgp=c(2.1,0.6,0))
+hist(m,xlab="Movement m",main="")
+
+
+
+fit<-secr.fit(tur,model=list(D~1,g0~1,sigma~1),buffer=1214.78,detectfn="HN",trace=FALSE,biasLimit=NA,verify=FALSE)
+
+print(fit)
+
+fitr<-secr.fit(tur,buffer=1214.78,start=fit,method="none")
+
+predict(fitr)
+ar=c(1,1,1,1))
+
+
+
+detector(traps(tur))<-"count"
+
+
+print(fit)
+
+
+par(mar=c(4,4,1,1))#reduce margins
+plot(fitr,xval=0:2000,limits=TRUE)
+
+
+
+esa.plot(fit)
+abline(v=1214.78,lty=2,col="red")
+
+
+fit.HN <- secr.fit (tur, buffer = 1214.78, detectfn = 'HN', trace = FALSE,biasLimit=NA)
+fit.EX <- secr.fit (tur, buffer = 1214.78, detectfn = 'EX', trace = FALSE,biasLimit=NA)
+fit.HR <- secr.fit (tur, buffer = 1214.78, detectfn = 'HR', trace = FALSE,biasLimit=NA)
+
+fits <- secrlist(HN = fit.HN, EX = fit.EX, HR = fit.HR)
+predict(fits)
+
+
+
+AIC(fits)
+
+
+par(mar=c(4,4,2,2))
+esa.plot(fits,xval=1000:2000,max.buffer=1214.78,biasLimit=NA)
+
+
+
+fit.HRb <- secr.fit (tur, buffer = 1214.78, detectfn = 'HR',
+model = g0 ~ b, trace = FALSE,biasLimit=NA)
+fit.HRbk <- secr.fit (tur, buffer = 1214.78, detectfn = 'HR',
+model = g0 ~ bk, trace = FALSE,biasLimit=NA)
+
+fitsb<-secrlist(null = fits$HR, b = fit.HRb, bk=fit.HRbk)
+
+AIC(fitsb)
+
+fit.HRbk
+
+
+
+fit$realnames="D"
+model.average(fits,realnames="D")
+

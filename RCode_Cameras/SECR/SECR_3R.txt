@@ -1,0 +1,67 @@
+library(secr)
+
+rio<-read.capthist(captfile="SECR_32.txt",trapfile=list("sess1.csv","sess2.csv","sess3.csv","sess4.csv"),detector="count",fmt="trapID",noccasions=3)
+
+summary(rio)
+
+
+
+par(mar=c(1,1,2,1))
+plot(rio,tracks=TRUE)
+
+
+
+m<-unlist(moves(rio))
+par(mar=c(3.2,4,1,1),mgp=c(2.1,0.6,0))
+hist(m,xlab="Movement m",main="")
+
+
+fit<-secr.fit(rio,model=list(D~1,g0~1,sigma~1),buffer=1214.78,detectfn="HN",trace=FALSE,biasLimit=NA,verify=FALSE)
+fit1<-secr.fit(rio,model=list(D~1,g0~1,sigma~1),buffer=1214.78,detectfn="HN",method="Nelder-Mead",trace=FALSE,biasLimit=NA,verify=FALSE)
+
+
+collate(fit = fit, fit1= fit1)[1,,,'D']
+
+
+detector(traps(rio))<-"count"
+
+fit$realnames="D"
+
+print(fit)
+
+
+
+fit.HN <- secr.fit (rio, buffer = 1214.78, detectfn = 'HN', trace = FALSE,biasLimit=NA)# This will hang some times, just rerun the encounter history. Then restart here.
+fit.EX <- secr.fit (rio, buffer = 1214.78, detectfn = 'EX', trace = FALSE,biasLimit=NA)
+fit.HR <- secr.fit (rio, buffer = 1214.78, detectfn = 'HR', trace = FALSE,biasLimit=NA)
+
+fits <- secrlist(HN = fit.HN, EX = fit.EX, HR = fit.HR)
+predict(fits)
+
+
+AIC(fits)
+
+fit$realnames="D"
+model.average(fits,realnames="D")
+
+
+fit.HRb <- secr.fit (rio, buffer = 1214.78, detectfn = 'HR', model=g0~b,trace = FALSE,biasLimit=NA)
+fit.HRbk <- secr.fit (rio, buffer = 1214.78, detectfn = 'HR', model=g0~bk,trace = FALSE,biasLimit=NA)
+
+fitsb<-secrlist(null = fits$HR, b = fit.HRb, bk=fit.HRbk)
+
+AIC(fitsb)
+
+
+
+predict(fitsb)
+
+
+
+predict(fitsb$b, newdata = data.frame(b = 0:1), realnames ="g0")
+
+
+modelAverage(fitsb, criterion = 'AICc')
+
+
+
